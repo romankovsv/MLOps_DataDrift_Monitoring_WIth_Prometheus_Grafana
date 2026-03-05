@@ -1,6 +1,5 @@
 global:
   resolve_timeout: 5m
-  slack_api_url: 'paste slack webhook url in this parenthesis'
 
 route:
   group_by: ['alertname', 'severity']
@@ -22,32 +21,11 @@ route:
       repeat_interval: 1h
 
 receivers:
-  # Default Slack notifications
+  # Default notifications (Slack disabled - add slack_api_url to global and uncomment to enable)
   - name: 'slack-notifications'
-    slack_configs:
-      - channel: '#ml-alerts'
-        title: '{{ .GroupLabels.alertname }}'
-        text: |
-          *Alert:* {{ .GroupLabels.alertname }}
-          *Severity:* {{ .GroupLabels.severity }}
-          *Summary:* {{ range .Alerts }}{{ .Annotations.summary }}{{ end }}
-          *Description:* {{ range .Alerts }}{{ .Annotations.description }}{{ end }}
-        send_resolved: true
-        color: '{{ if eq .Status "firing" }}danger{{ else }}good{{ end }}'
 
-  # Critical alerts with different formatting
+  # Critical alerts (Slack disabled)
   - name: 'slack-critical'
-    slack_configs:
-      - channel: '#ml-alerts-critical'
-        title: 'CRITICAL ALERT: {{ .GroupLabels.alertname }}'
-        text: |
-          *Alert:* {{ .GroupLabels.alertname }}
-          *Severity:* {{ .GroupLabels.severity }}
-          *Summary:* {{ range .Alerts }}{{ .Annotations.summary }}{{ end }}
-          *Description:* {{ range .Alerts }}{{ .Annotations.description }}{{ end }}
-          *Action Required:* Investigate immediately
-        send_resolved: true
-        color: '{{ if eq .Status "firing" }}danger{{ else }}good{{ end }}'
 
 inhibit_rules:
   - source_match:
